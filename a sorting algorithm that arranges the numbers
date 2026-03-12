@@ -1,0 +1,50 @@
+import java.io.*;
+import java.util.*;
+
+class TestClass {
+    public static void main(String args[]) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        PrintWriter out = new PrintWriter(System.out);
+        
+        String line = br.readLine();
+        if (line == null) return;
+        int T = Integer.parseInt(line.trim());
+
+        while (T-- > 0) {
+            int N = Integer.parseInt(br.readLine().trim());
+            Integer[] A = new Integer[N];
+            StringTokenizer st = new StringTokenizer(br.readLine());
+            
+            for (int i = 0; i < N; i++) {
+                A[i] = Integer.parseInt(st.nextToken());
+            }
+
+            // Sort using a custom comparator
+            Arrays.sort(A, new Comparator<Integer>() {
+                @Override
+                public int compare(Integer a, Integer b) {
+                    int bitsA = Integer.bitCount(a);
+                    int bitsB = Integer.bitCount(b);
+                    
+                    boolean evenA = (bitsA % 2 == 0);
+                    boolean evenB = (bitsB % 2 == 0);
+
+                    // If one is even and other is odd, even comes first
+                    if (evenA != evenB) {
+                        return evenA ? -1 : 1;
+                    }
+                    
+                    // If both have same parity, sort ascending
+                    return Integer.compare(a, b);
+                }
+            });
+
+            // Output the sorted array
+            for (int i = 0; i < N; i++) {
+                out.print(A[i] + (i == N - 1 ? "" : " "));
+            }
+            out.println();
+        }
+        out.flush();
+    }
+}
