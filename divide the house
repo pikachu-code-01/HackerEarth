@@ -1,0 +1,26 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
+class TestClass {
+    public static void main(String args[]) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        
+        // Read N
+        String line1 = br.readLine();
+        if (line1 == null) return;
+        int N = Integer.parseInt(line1.trim());
+        
+        // Read the village string
+        String village = br.readLine();
+        if (village == null) return;
+        
+        // Check for adjacent houses
+        if (village.contains("HH")) {
+            System.out.println("NO");
+        } else {
+            System.out.println("YES");
+            // Replace all '.' with 'B' to get the most fences
+            System.out.println(village.replace('.', 'B'));
+        }
+    }
+}
