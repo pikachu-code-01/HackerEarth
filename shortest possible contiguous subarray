@@ -1,0 +1,91 @@
+import java.io.*;
+import java.util.*;
+
+class TestClass {
+    public static void main(String args[]) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        String line = br.readLine();
+        if (line == null) return;
+        int T = Integer.parseInt(line.trim());
+
+        while (T-- > 0) {
+            int N = Integer.parseInt(br.readLine().trim());
+            int[] A = new int[N];
+            StringTokenizer st = new StringTokenizer(br.readLine());
+            int totalOr = 0;
+            for (int i = 0; i < N; i++) {
+                A[i] = Integer.parseInt(st.nextToken());
+                totalOr |= A[i];
+            }
+
+            // Precompute Prefix and Suffix ORs for O(1) "Outside" calculation
+            int[] pref = new int[N];
+            int[] suff = new int[N];
+            pref[0] = A[0];
+            for (int i = 1; i < N; i++) pref[i] = pref[i - 1] | A[i];
+            suff[N - 1] = A[N - 1];
+            for (int i = N - 2; i >= 0; i--) suff[i] = suff[i + 1] | A[i];
+
+            int minLen = Integer.MAX_VALUE;
+            long count = 0;
+            int[] bitCount = new int[32];
+            int left = 0;
+
+            for (int right = 0; right < N; right++) {
+                addBits(bitCount, A[right]);
+
+                while (left <= right) {
+                    int insideOr = getOrFromBits(bitCount);
+                    int outsideOr = 0;
+                    if (left > 0) outsideOr |= pref[left - 1];
+                    if (right < N - 1) outsideOr |= suff[right + 1];
+
+                    if (insideOr == outsideOr) {
+                        int currentLen = right - left + 1;
+                        if (currentLen < minLen) {
+                            minLen = currentLen;
+                            count = 1;
+                        } else if (currentLen == minLen) {
+                            count++;
+                        }
+                        // Try shrinking from the left to find a smaller subarray
+                        removeBits(bitCount, A[left]);
+                        left++;
+                    } else if (left < right && (insideOr > outsideOr)) {
+                        // If inside has bits that outside doesn't, we must shrink left
+                        removeBits(bitCount, A[left]);
+                        left++;
+                    } else {
+                        break;
+                    }
+                }
+            }
+
+            if (minLen == Integer.MAX_VALUE) {
+                System.out.println("-1");
+            } else {
+                System.out.println(minLen + " " + count);
+            }
+        }
+    }
+
+    private static void addBits(int[] bitCount, int val) {
+        for (int i = 0; i < 31; i++) {
+            if (((val >> i) & 1) == 1) bitCount[i]++;
+        }
+    }
+
+    private static void removeBits(int[] bitCount, int val) {
+        for (int i = 0; i < 31; i++) {
+            if (((val >> i) & 1) == 1) bitCount[i]--;
+        }
+    }
+
+    private static int getOrFromBits(int[] bitCount) {
+        int res = 0;
+        for (int i = 0; i < 31; i++) {
+            if (bitCount[i] > 0) res |= (1 << i);
+        }
+        return res;
+    }
+}
