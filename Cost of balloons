@@ -1,0 +1,42 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.StringTokenizer;
+
+class TestClass {
+    public static void main(String args[]) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        
+        String line = br.readLine();
+        if (line == null) return;
+        int T = Integer.parseInt(line.trim());
+
+        while (T-- > 0) {
+            // Read balloon costs
+            StringTokenizer st = new StringTokenizer(br.readLine());
+            int costGreen = Integer.parseInt(st.nextToken());
+            int costPurple = Integer.parseInt(st.nextToken());
+
+            // Read number of participants
+            int N = Integer.parseInt(br.readLine().trim());
+            
+            int solvedP1 = 0;
+            int solvedP2 = 0;
+
+            // Count total solves for each problem
+            for (int i = 0; i < N; i++) {
+                st = new StringTokenizer(br.readLine());
+                if (Integer.parseInt(st.nextToken()) == 1) solvedP1++;
+                if (Integer.parseInt(st.nextToken()) == 1) solvedP2++;
+            }
+
+            // Option 1: Green for P1, Purple for P2
+            int option1 = (solvedP1 * costGreen) + (solvedP2 * costPurple);
+            
+            // Option 2: Purple for P1, Green for P2
+            int option2 = (solvedP1 * costPurple) + (solvedP2 * costGreen);
+
+            // Print the minimum of the two costs
+            System.out.println(Math.min(option1, option2));
+        }
+    }
+}
